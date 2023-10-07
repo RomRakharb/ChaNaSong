@@ -1,4 +1,3 @@
-import sys
 from PySide6.QtGui import QFont
 from PySide6.QtWidgets import (
     QApplication,
@@ -15,6 +14,8 @@ from PySide6.QtWidgets import (
     QCheckBox,
 )
 
+import sys
+import sqlite3
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -62,6 +63,7 @@ class MainWindow(QMainWindow):
         right_layout = QVBoxLayout()
         self.print_bt = QPushButton("Print")
         self.reset_bt = QPushButton("Reset")
+        self.reset_bt.released.connect(self.reset)
         self.edit_bt = QPushButton("Edit")
         self.add_bt = QPushButton("Add")
         self.delete_bt = QPushButton("Delete")
@@ -82,6 +84,7 @@ class MainWindow(QMainWindow):
         # finish outer layout
 
         self.set_font()
+        self.reset()
 
         widget = QWidget()
         widget.setLayout(layout)
@@ -117,7 +120,28 @@ class MainWindow(QMainWindow):
         ]
         for each_widget in widget_list:
             each_widget.setFont(QFont(font, font_size))
-        pass
+
+    def reset(self):
+        widget_list = [
+            self.title_le,
+            self.line_one_le,
+            self.line_two_le,
+            self.line_three_le,
+            self.line_four_le,
+            self.line_five_le
+        ]
+        for each_widget in widget_list:
+            each_widget.setText("")
+            each_widget.setDisabled(True)
+        self.title_cbb.setEditText("--เลือกหัวข้อ--")
+
+        conn = sqlite3.connect('database.db')
+        with conn:
+            cursor = conn.cursor()
+            data = cursor.execute('''SELECT TITLE FROM ADDRESSEE''')
+        for row in data:
+            self.title_cbb.addItems(row)
+            self.all_list.addItems(row)
 
 
 if __name__ == '__main__':
