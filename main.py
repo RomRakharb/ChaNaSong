@@ -1,6 +1,4 @@
-from PySide6.QtCore import Qt, QModelIndex
 from PySide6.QtGui import QFont
-from PySide6.QtSql import QSqlDatabase
 from PySide6.QtWidgets import (
     QApplication,
     QMainWindow,
@@ -19,7 +17,6 @@ from PySide6.QtWidgets import (
 from db import Database
 
 import sys
-import sqlite3
 
 
 class MainWindow(QMainWindow):
@@ -35,29 +32,27 @@ class MainWindow(QMainWindow):
         left_layout.setVerticalSpacing(10)
         self.name_cbb = QComboBox()
         self.name_cbb.setEditable(True)
-        self.name_cbb.activated.connect(self.title_selected)
-        # self.title_cbb.currentIndexChanged.connect(self.index_changed)
-        # self.title_cbb.currentTextChanged.connect(self.text_changed)
-        self.title_le = QLineEdit()
-        self.line_one_le = QLineEdit()
-        self.line_two_le = QLineEdit()
-        self.line_three_le = QLineEdit()
-        self.line_four_le = QLineEdit()
-        self.line_five_le = QLineEdit()
+        self.name_cbb.activated.connect(self.name_selected)
+        self.name_le = QLineEdit()
+        self.line_one = QLineEdit()
+        self.line_two = QLineEdit()
+        self.line_three = QLineEdit()
+        self.line_four = QLineEdit()
+        self.line_five = QLineEdit()
         left_layout.addRow("", self.name_cbb)
         self.org_name_lb = QLabel("ชื่อหน่วยงาน: ")
-        left_layout.addRow(self.org_name_lb, self.title_le)
+        left_layout.addRow(self.org_name_lb, self.name_le)
         self.start_lb = QLabel("เรียน")
-        left_layout.addRow(self.start_lb, self.line_one_le)
-        left_layout.addRow("", self.line_two_le)
-        left_layout.addRow("", self.line_three_le)
-        left_layout.addRow("", self.line_four_le)
-        left_layout.addRow("", self.line_five_le)
+        left_layout.addRow(self.start_lb, self.line_one)
+        left_layout.addRow("", self.line_two)
+        left_layout.addRow("", self.line_three)
+        left_layout.addRow("", self.line_four)
+        left_layout.addRow("", self.line_five)
         # finish left
 
         # start middle
         self.name_list = QListWidget()
-        self.name_list.activated.connect(self.title_selected)
+        self.name_list.activated.connect(self.name_selected)
         # finish middle
 
         # start right
@@ -91,30 +86,33 @@ class MainWindow(QMainWindow):
         widget.setLayout(layout)
         self.setCentralWidget(widget)
 
-    def index_changed(self, index):  # index is an int stating from 0
-        print(index)
-
-    def text_changed(self, text):  # text is a str
-        print(text)
-
-    def title_selected(self, text):
+    def name_selected(self, text):
         if isinstance(text, int):
-            print(self.name_cbb.itemText(text))
+            data = self.name_cbb.itemText(text)
         else:
             data = text.data()
-            print(data)
+        with Database('addressee') as db_context:
+            for row, value in enumerate(db_context.select(1)):
+                if value == data:
+                    self.name_cbb.setEditText(db_context.select(1)[row])
+                    self.name_le.setText(db_context.select(1)[row])
+                    self.line_one.setText(db_context.select(2)[row])
+                    self.line_two.setText(db_context.select(3)[row])
+                    self.line_three.setText(db_context.select(4)[row])
+                    self.line_four.setText(db_context.select(5)[row])
+                    self.line_five.setText(db_context.select(6)[row])
 
     def set_font(self):
         font = 'Arial'
         font_size = 20
         widget_list = [
             self.name_cbb,
-            self.title_le,
-            self.line_one_le,
-            self.line_two_le,
-            self.line_three_le,
-            self.line_four_le,
-            self.line_five_le,
+            self.name_le,
+            self.line_one,
+            self.line_two,
+            self.line_three,
+            self.line_four,
+            self.line_five,
             self.org_name_lb,
             self.start_lb,
             self.name_list,
@@ -131,12 +129,12 @@ class MainWindow(QMainWindow):
 
     def reset(self):
         widget_list = [
-            self.title_le,
-            self.line_one_le,
-            self.line_two_le,
-            self.line_three_le,
-            self.line_four_le,
-            self.line_five_le
+            self.name_le,
+            self.line_one,
+            self.line_two,
+            self.line_three,
+            self.line_four,
+            self.line_five
         ]
         for each_widget in widget_list:
             each_widget.setText("")
