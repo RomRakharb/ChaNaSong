@@ -1,23 +1,34 @@
-# Import module
-import sqlite3
+from PySide6.QtSql import QSqlDatabase, QSqlQuery
 
-# Connecting to sqlite
-conn = sqlite3.connect('database.db')
 
-title = "พิสูจน์หลักฐานจังหวัดภูเก็ต1"
-line_one = "พิสูจน์หลักฐานจังหวัดภูเก็ต"
-line_two = "323/39 ถ.เยาวราช"
-line_three = "ต.ตลาดใหญ่ อ.เมืองภูเก็ต"
-line_four = "จ.ภูเก็ต 83000"
-line_five = "076 211 176"
+class Database:
+    def __init__(self, db_name: str):
+        self.db_name = db_name.upper()
+    def __enter__(self):
+        # Initialize the database connection
+        self.db = QSqlDatabase.addDatabase('QSQLITE')
+        self.db.setDatabaseName('database.db')
 
-# with conn:
-# 	cursor = conn.cursor()
-# 	cursor.execute(f'''INSERT INTO ADDRESSEE (TITLE, LINE_ONE, LINE_TWO, LINE_THREE, LINE_FOUR, LINE_FIVE) VALUES ('{title}', '{line_one}', '{line_two}', '{line_three}', '{line_four}', '{line_five}')''')
-# 	conn.commit()
+        # Open the database connection
+        if not self.db.open():
+            print("Unable to connect to the database")
+            raise RuntimeError("Database connection failed")
+        return self
 
-with conn:
-	cursor = conn.cursor()
-	data = cursor.execute('''SELECT * FROM ADDRESSEE''')
-for row in data:
-	print(row)
+    def select(self, column: int) -> list[str]:
+        data_list = []
+        query = QSqlQuery()
+        query.exec(f"SELECT * FROM {self.db_name} ORDER BY NAME DESC")
+        while query.next():
+            data_list.append(query.value(column))
+        return data_list
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        # Close the database connection when exiting the context
+        self.db.close()
+
+
+if __name__ == "__main__":
+    with Database('addressee') as db_context:
+        for row in db_context.select(1):
+            print(row)

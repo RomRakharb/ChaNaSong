@@ -1,4 +1,6 @@
+from PySide6.QtCore import Qt, QModelIndex
 from PySide6.QtGui import QFont
+from PySide6.QtSql import QSqlDatabase
 from PySide6.QtWidgets import (
     QApplication,
     QMainWindow,
@@ -14,17 +16,16 @@ from PySide6.QtWidgets import (
     QCheckBox,
 )
 
+from db import Database
+
 import sys
 import sqlite3
+
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Zong")
-
-        test_list = ["One", "Two", "Three"]
-        font = 'Arial'
-        font_size = 20
 
         # start outer layout
         layout = QHBoxLayout()
@@ -32,18 +33,18 @@ class MainWindow(QMainWindow):
         # start left
         left_layout = QFormLayout()
         left_layout.setVerticalSpacing(10)
-        self.title_cbb = QComboBox()
-        self.title_cbb.setEditable(True)
-        self.title_cbb.addItems(test_list)
-        self.title_cbb.currentIndexChanged.connect(self.index_changed)
-        self.title_cbb.currentTextChanged.connect(self.text_changed)
+        self.name_cbb = QComboBox()
+        self.name_cbb.setEditable(True)
+        self.name_cbb.activated.connect(self.title_selected)
+        # self.title_cbb.currentIndexChanged.connect(self.index_changed)
+        # self.title_cbb.currentTextChanged.connect(self.text_changed)
         self.title_le = QLineEdit()
         self.line_one_le = QLineEdit()
         self.line_two_le = QLineEdit()
         self.line_three_le = QLineEdit()
         self.line_four_le = QLineEdit()
         self.line_five_le = QLineEdit()
-        left_layout.addRow("", self.title_cbb)
+        left_layout.addRow("", self.name_cbb)
         self.org_name_lb = QLabel("ชื่อหน่วยงาน: ")
         left_layout.addRow(self.org_name_lb, self.title_le)
         self.start_lb = QLabel("เรียน")
@@ -55,8 +56,8 @@ class MainWindow(QMainWindow):
         # finish left
 
         # start middle
-        self.all_list = QListWidget()
-        self.all_list.addItems(test_list)
+        self.name_list = QListWidget()
+        self.name_list.activated.connect(self.title_selected)
         # finish middle
 
         # start right
@@ -79,7 +80,7 @@ class MainWindow(QMainWindow):
         # finish right
 
         layout.addLayout(left_layout)
-        layout.addWidget(self.all_list)
+        layout.addWidget(self.name_list)
         layout.addLayout(right_layout)
         # finish outer layout
 
@@ -96,11 +97,18 @@ class MainWindow(QMainWindow):
     def text_changed(self, text):  # text is a str
         print(text)
 
+    def title_selected(self, text):
+        if isinstance(text, int):
+            print(self.name_cbb.itemText(text))
+        else:
+            data = text.data()
+            print(data)
+
     def set_font(self):
         font = 'Arial'
         font_size = 20
         widget_list = [
-            self.title_cbb,
+            self.name_cbb,
             self.title_le,
             self.line_one_le,
             self.line_two_le,
@@ -109,7 +117,7 @@ class MainWindow(QMainWindow):
             self.line_five_le,
             self.org_name_lb,
             self.start_lb,
-            self.all_list,
+            self.name_list,
             self.print_bt,
             self.reset_bt,
             self.edit_bt,
@@ -133,15 +141,14 @@ class MainWindow(QMainWindow):
         for each_widget in widget_list:
             each_widget.setText("")
             each_widget.setDisabled(True)
-        self.title_cbb.setEditText("--เลือกหัวข้อ--")
 
-        conn = sqlite3.connect('database.db')
-        with conn:
-            cursor = conn.cursor()
-            data = cursor.execute('''SELECT TITLE FROM ADDRESSEE''')
-        for row in data:
-            self.title_cbb.addItems(row)
-            self.all_list.addItems(row)
+        self.name_cbb.clear()
+        self.name_list.clear()
+        with Database('addressee') as db_context:
+            for row in db_context.select(1):
+                self.name_cbb.addItem(row)
+                self.name_list.addItem(row)
+        self.name_cbb.setEditText("")
 
 
 if __name__ == '__main__':
