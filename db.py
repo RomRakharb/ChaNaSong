@@ -23,6 +23,11 @@ class Database:
             data_list.append(query.value(column))
         return data_list
 
+    # def insert(self, name, line_one, line_two, line_three, line_four, line_five):
+    #     query = QSqlQuery()
+    #     query.exec(f"INSERT ")
+    #     pass
+
     def __exit__(self, exc_type, exc_value, traceback):
         # Close the database connection when exiting the context
         self.db.close()

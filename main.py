@@ -61,7 +61,9 @@ class MainWindow(QMainWindow):
         self.reset_bt = QPushButton("Reset")
         self.reset_bt.released.connect(self.reset)
         self.edit_bt = QPushButton("Edit")
+        self.edit_bt.released.connect(self.edit)
         self.add_bt = QPushButton("Add")
+        self.add_bt.released.connect(self.add_mode)
         self.delete_bt = QPushButton("Delete")
         self.a4_chb = QCheckBox("ขนาด A4")
         self.not_send_chb = QCheckBox("ไม่ส่ง")
@@ -128,19 +130,12 @@ class MainWindow(QMainWindow):
             each_widget.setFont(QFont(font, font_size))
 
     def reset(self):
-        widget_list = [
-            self.name_le,
-            self.line_one,
-            self.line_two,
-            self.line_three,
-            self.line_four,
-            self.line_five
-        ]
-        for each_widget in widget_list:
-            each_widget.setText("")
-            each_widget.setDisabled(True)
+        self.line_state(False)
+        self.button_state(True)
 
+        self.name_cbb.setEnabled(True)
         self.name_cbb.clear()
+        self.name_list.setEnabled(True)
         self.name_list.clear()
         with Database('addressee') as db_context:
             for row in db_context.select(1):
@@ -148,6 +143,59 @@ class MainWindow(QMainWindow):
                 self.name_list.addItem(row)
         self.name_cbb.setEditText("")
 
+    def edit(self):
+        if self.name_le.text() == "":
+            print('pass')
+        else:
+            self.name_cbb.setDisabled(True)
+            self.print_bt.setDisabled(True)
+
+            self.name_le.setEnabled(True)
+            self.line_one.setEnabled(True)
+            self.line_two.setEnabled(True)
+            self.line_three.setEnabled(True)
+            self.line_four.setEnabled(True)
+            self.line_five.setEnabled(True)
+        pass
+
+    def add_mode(self):
+        if self.print_bt.isEnabled():
+            self.line_state(True)
+            self.button_state(False, [2])
+            self.name_cbb.setEditText('')
+            self.name_cbb.setEnabled(False)
+        else:
+            if self.name_le.text() != "" and self.name_le.text() != "":
+                print('add')
+
+
+    def line_state(self, state: bool):
+        le_list = [
+            self.name_le,
+            self.line_one,
+            self.line_two,
+            self.line_three,
+            self.line_four,
+            self.line_five
+        ]
+        for each_widget in le_list:
+            each_widget.setText("")
+            each_widget.setEnabled(state)
+
+    def button_state(self, state: bool, except_button=[]):
+        button_list = [
+            self.print_bt,
+            self.edit_bt,
+            self.add_bt,
+            self.delete_bt,
+            self.a4_chb,
+            self.not_send_chb
+        ]
+        for index, value in enumerate(button_list):
+            if index in except_button:
+                value.setEnabled(not state)
+            else:
+                value.setEnabled(state)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
