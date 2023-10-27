@@ -3,7 +3,6 @@ from PySide6.QtWidgets import (
     QApplication,
     QMainWindow,
     QPushButton,
-    QComboBox,
     QWidget,
     QLineEdit,
     QLabel,
@@ -15,6 +14,7 @@ from PySide6.QtWidgets import (
 )
 
 from db import Database
+from widget import ComboBox
 
 import sys
 
@@ -30,8 +30,8 @@ class MainWindow(QMainWindow):
         # start left
         left_layout = QFormLayout()
         left_layout.setVerticalSpacing(10)
-        self.name_cbb = QComboBox()
-        self.name_cbb.setEditable(True)
+        with Database('addressee') as db_context:
+            self.name_cbb = ComboBox(db_context.select(1))
         self.name_cbb.activated.connect(self.name_selected)
         self.name_le = QLineEdit()
         self.line_one = QLineEdit()
@@ -168,7 +168,6 @@ class MainWindow(QMainWindow):
             if self.name_le.text() != "" and self.name_le.text() != "":
                 print('add')
 
-
     def line_state(self, state: bool):
         le_list = [
             self.name_le,
@@ -196,6 +195,7 @@ class MainWindow(QMainWindow):
                 value.setEnabled(not state)
             else:
                 value.setEnabled(state)
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
