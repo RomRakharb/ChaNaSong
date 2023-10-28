@@ -14,7 +14,7 @@ from PySide6.QtWidgets import (
 )
 
 from db import Database
-from widget import ComboBox
+from widget import SearchableComboBox
 
 import sys
 
@@ -30,24 +30,23 @@ class MainWindow(QMainWindow):
         # start left
         left_layout = QFormLayout()
         left_layout.setVerticalSpacing(10)
-        with Database('addressee') as db_context:
-            self.name_cbb = ComboBox(db_context.select(1))
+        self.name_cbb = SearchableComboBox('addressee')
         self.name_cbb.activated.connect(self.name_selected)
         self.name_le = QLineEdit()
-        self.line_one = QLineEdit()
-        self.line_two = QLineEdit()
-        self.line_three = QLineEdit()
-        self.line_four = QLineEdit()
-        self.line_five = QLineEdit()
+        self.detail_1 = QLineEdit()
+        self.detail_2 = QLineEdit()
+        self.detail_3 = QLineEdit()
+        self.detail_4 = QLineEdit()
+        self.detail_5 = QLineEdit()
         left_layout.addRow("", self.name_cbb)
         self.org_name_lb = QLabel("ชื่อหน่วยงาน: ")
         left_layout.addRow(self.org_name_lb, self.name_le)
         self.start_lb = QLabel("เรียน")
-        left_layout.addRow(self.start_lb, self.line_one)
-        left_layout.addRow("", self.line_two)
-        left_layout.addRow("", self.line_three)
-        left_layout.addRow("", self.line_four)
-        left_layout.addRow("", self.line_five)
+        left_layout.addRow(self.start_lb, self.detail_1)
+        left_layout.addRow("", self.detail_2)
+        left_layout.addRow("", self.detail_3)
+        left_layout.addRow("", self.detail_4)
+        left_layout.addRow("", self.detail_5)
         # finish left
 
         # start middle
@@ -93,16 +92,16 @@ class MainWindow(QMainWindow):
             data = self.name_cbb.itemText(text)
         else:
             data = text.data()
-        with Database('addressee') as db_context:
+        with Database('ADDRESSEE') as db_context:
             for row, value in enumerate(db_context.select(1)):
                 if value == data:
                     self.name_cbb.setEditText(db_context.select(1)[row])
                     self.name_le.setText(db_context.select(1)[row])
-                    self.line_one.setText(db_context.select(2)[row])
-                    self.line_two.setText(db_context.select(3)[row])
-                    self.line_three.setText(db_context.select(4)[row])
-                    self.line_four.setText(db_context.select(5)[row])
-                    self.line_five.setText(db_context.select(6)[row])
+                    self.detail_1.setText(db_context.select(2)[row])
+                    self.detail_2.setText(db_context.select(3)[row])
+                    self.detail_3.setText(db_context.select(4)[row])
+                    self.detail_4.setText(db_context.select(5)[row])
+                    self.detail_5.setText(db_context.select(6)[row])
 
     def set_font(self):
         font = 'Arial'
@@ -110,11 +109,11 @@ class MainWindow(QMainWindow):
         widget_list = [
             self.name_cbb,
             self.name_le,
-            self.line_one,
-            self.line_two,
-            self.line_three,
-            self.line_four,
-            self.line_five,
+            self.detail_1,
+            self.detail_2,
+            self.detail_3,
+            self.detail_4,
+            self.detail_5,
             self.org_name_lb,
             self.start_lb,
             self.name_list,
@@ -137,11 +136,11 @@ class MainWindow(QMainWindow):
         self.name_cbb.clear()
         self.name_list.setEnabled(True)
         self.name_list.clear()
-        with Database('addressee') as db_context:
+        with Database('ADDRESSEE') as db_context:
             for row in db_context.select(1):
                 self.name_cbb.addItem(row)
                 self.name_list.addItem(row)
-        self.name_cbb.setEditText("")
+        self.name_cbb.clearEditText()
 
     def edit(self):
         if self.name_le.text() == "":
@@ -151,11 +150,11 @@ class MainWindow(QMainWindow):
             self.print_bt.setDisabled(True)
 
             self.name_le.setEnabled(True)
-            self.line_one.setEnabled(True)
-            self.line_two.setEnabled(True)
-            self.line_three.setEnabled(True)
-            self.line_four.setEnabled(True)
-            self.line_five.setEnabled(True)
+            self.detail_1.setEnabled(True)
+            self.detail_2.setEnabled(True)
+            self.detail_3.setEnabled(True)
+            self.detail_4.setEnabled(True)
+            self.detail_5.setEnabled(True)
         pass
 
     def add_mode(self):
@@ -166,16 +165,24 @@ class MainWindow(QMainWindow):
             self.name_cbb.setEnabled(False)
         else:
             if self.name_le.text() != "" and self.name_le.text() != "":
-                print('add')
+                with Database('ADDRESSEE') as db_context:
+                    db_context.insert(
+                        self.name_le.text(),
+                        self.detail_1.text(),
+                        self.detail_2.text(),
+                        self.detail_3.text(),
+                        self.detail_4.text(),
+                        self.detail_5.text())
+                    print('add')
 
     def line_state(self, state: bool):
         le_list = [
             self.name_le,
-            self.line_one,
-            self.line_two,
-            self.line_three,
-            self.line_four,
-            self.line_five
+            self.detail_1,
+            self.detail_2,
+            self.detail_3,
+            self.detail_4,
+            self.detail_5
         ]
         for each_widget in le_list:
             each_widget.setText("")

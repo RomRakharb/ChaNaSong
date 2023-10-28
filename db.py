@@ -3,7 +3,8 @@ from PySide6.QtSql import QSqlDatabase, QSqlQuery
 
 class Database:
     def __init__(self, db_name: str):
-        self.db_name = db_name.upper()
+        self.db_name = db_name
+
     def __enter__(self):
         # Initialize the database connection
         self.db = QSqlDatabase.addDatabase('QSQLITE')
@@ -23,10 +24,12 @@ class Database:
             data_list.append(query.value(column))
         return data_list
 
-    # def insert(self, name, line_one, line_two, line_three, line_four, line_five):
-    #     query = QSqlQuery()
-    #     query.exec(f"INSERT ")
-    #     pass
+    def insert(self, name, detail_1, detail_2, detail_3, detail_4, detail_5):
+        query = QSqlQuery()
+        query.exec(
+            f"""INSERT INTO {self.db_name} (NAME, DETAIL_1, DETAIL_2, DETAIL_3, DETAIL_4, DETAIL_5) 
+            VALUES ('{name}', '{detail_1}', '{detail_2}', '{detail_3}', '{detail_4}', '{detail_5}')""")
+        pass
 
     def __exit__(self, exc_type, exc_value, traceback):
         # Close the database connection when exiting the context
