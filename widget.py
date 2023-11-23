@@ -7,6 +7,7 @@ from db import Database
 font = 'Arial'
 font_size = 20
 
+
 class SearchableComboBox(QComboBox):
     def __init__(self, table: str):
         super().__init__()

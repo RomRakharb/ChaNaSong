@@ -1,3 +1,4 @@
+
 from PySide6.QtGui import QFont
 from PySide6.QtWidgets import (
     QApplication,
@@ -6,7 +7,6 @@ from PySide6.QtWidgets import (
     QWidget,
     QLineEdit,
     QLabel,
-    QListWidget,
     QFormLayout,
     QVBoxLayout,
     QHBoxLayout,
@@ -27,7 +27,7 @@ class MainWindow(QMainWindow):
         # start outer layout
         layout = QHBoxLayout()
 
-        # start left
+        # start left layout
         left_layout = QFormLayout()
         left_layout.setVerticalSpacing(10)
         self.name_cbb = SearchableComboBox('addressee')
@@ -47,25 +47,21 @@ class MainWindow(QMainWindow):
         left_layout.addRow("", self.detail_3)
         left_layout.addRow("", self.detail_4)
         left_layout.addRow("", self.detail_5)
-        # finish left
+        # finish left layout
 
-        # start middle
-        self.name_list = QListWidget()
-        self.name_list.activated.connect(self.name_selected)
-        # finish middle
-
-        # start right
+        # start right layout
         right_layout = QVBoxLayout()
-        self.print_bt = QPushButton("Print")
-        self.reset_bt = QPushButton("Reset")
+        self.print_bt = QPushButton("พิมพ์")
+        self.reset_bt = QPushButton("รีเซ็ต")
         self.reset_bt.released.connect(self.reset)
-        self.edit_bt = QPushButton("Edit")
+        self.edit_bt = QPushButton("แก้ไข")
         self.edit_bt.released.connect(self.edit)
-        self.add_bt = QPushButton("Add")
+        self.add_bt = QPushButton("เพิ่ม")
         self.add_bt.released.connect(self.add_mode)
-        self.delete_bt = QPushButton("Delete")
+        self.delete_bt = QPushButton("ลบ")
         self.a4_chb = QCheckBox("ขนาด A4")
         self.not_send_chb = QCheckBox("ไม่ส่ง")
+
         right_layout.addWidget(self.print_bt)
         right_layout.addWidget(self.reset_bt)
         right_layout.addWidget(self.edit_bt)
@@ -73,10 +69,9 @@ class MainWindow(QMainWindow):
         right_layout.addWidget(self.delete_bt)
         right_layout.addWidget(self.a4_chb)
         right_layout.addWidget(self.not_send_chb)
-        # finish right
+        # finish right layout
 
         layout.addLayout(left_layout)
-        layout.addWidget(self.name_list)
         layout.addLayout(right_layout)
         # finish outer layout
 
@@ -116,7 +111,6 @@ class MainWindow(QMainWindow):
             self.detail_5,
             self.org_name_lb,
             self.start_lb,
-            self.name_list,
             self.print_bt,
             self.reset_bt,
             self.edit_bt,
@@ -134,13 +128,11 @@ class MainWindow(QMainWindow):
 
         self.name_cbb.setEnabled(True)
         self.name_cbb.clear()
-        self.name_list.setEnabled(True)
-        self.name_list.clear()
         with Database('ADDRESSEE') as db_context:
             for row in db_context.select(1):
                 self.name_cbb.addItem(row)
-                self.name_list.addItem(row)
         self.name_cbb.clearEditText()
+        self.name_cbb.setFocus()
 
     def edit(self):
         if self.name_le.text() == "":
