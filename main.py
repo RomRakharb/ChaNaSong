@@ -57,7 +57,7 @@ class MainWindow(QMainWindow):
         self.edit_bt = QPushButton("แก้ไข")
         self.edit_bt.released.connect(self.edit)
         self.add_bt = QPushButton("เพิ่ม")
-        self.add_bt.released.connect(self.add_mode)
+        self.add_bt.released.connect(self.add)
         self.delete_bt = QPushButton("ลบ")
         self.a4_chb = QCheckBox("ขนาด A4")
         self.not_send_chb = QCheckBox("ไม่ส่ง")
@@ -149,7 +149,7 @@ class MainWindow(QMainWindow):
             self.detail_5.setEnabled(True)
         pass
 
-    def add_mode(self):
+    def add(self):
         if self.print_bt.isEnabled():
             self.line_state(True)
             self.button_state(False, [2])
@@ -165,7 +165,7 @@ class MainWindow(QMainWindow):
                         self.detail_3.text(),
                         self.detail_4.text(),
                         self.detail_5.text())
-                    print('add')
+                    self.reset()
 
     def line_state(self, state: bool):
         le_list = [
