@@ -124,6 +124,7 @@ class MainWindow(QMainWindow):
 
     def reset(self):
         self.line_state(False)
+        self.line_clear()
         self.button_state(True)
 
         self.name_cbb.setEnabled(True)
@@ -135,28 +136,31 @@ class MainWindow(QMainWindow):
         self.name_cbb.setFocus()
 
     def edit(self):
-        if self.name_le.text() == "":
-            print('pass')
-        else:
-            self.name_cbb.setDisabled(True)
-            self.print_bt.setDisabled(True)
-
-            self.name_le.setEnabled(True)
-            self.detail_1.setEnabled(True)
-            self.detail_2.setEnabled(True)
-            self.detail_3.setEnabled(True)
-            self.detail_4.setEnabled(True)
-            self.detail_5.setEnabled(True)
-        pass
+        if self.print_bt.isEnabled() and self.name_le.text() != "" and self.detail_1.text() != "":
+            self.line_state(True)
+            self.button_state(False, [1])
+            self.name_cbb.setEnabled(False)
+        elif self.name_le.text() != "" and self.detail_1.text() != "":
+            with Database('ADDRESSEE') as db_context:
+                db_context.update(
+                    self.name_cbb.currentText(),
+                    self.name_le.text(),
+                    self.detail_1.text(),
+                    self.detail_2.text(),
+                    self.detail_3.text(),
+                    self.detail_4.text(),
+                    self.detail_5.text())
+                self.reset()
 
     def add(self):
         if self.print_bt.isEnabled():
             self.line_state(True)
+            self.line_clear()
             self.button_state(False, [2])
-            self.name_cbb.setEditText('')
+            self.name_cbb.clear()
             self.name_cbb.setEnabled(False)
         else:
-            if self.name_le.text() != "" and self.name_le.text() != "":
+            if self.name_le.text() != "" and self.detail_1.text() != "":
                 with Database('ADDRESSEE') as db_context:
                     db_context.insert(
                         self.name_le.text(),
@@ -177,8 +181,19 @@ class MainWindow(QMainWindow):
             self.detail_5
         ]
         for each_widget in le_list:
-            each_widget.setText("")
             each_widget.setEnabled(state)
+
+    def line_clear(self):
+        le_list = [
+            self.name_le,
+            self.detail_1,
+            self.detail_2,
+            self.detail_3,
+            self.detail_4,
+            self.detail_5
+        ]
+        for each_widget in le_list:
+            each_widget.clear()
 
     def button_state(self, state: bool, except_button=[]):
         button_list = [
