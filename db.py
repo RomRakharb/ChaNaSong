@@ -31,12 +31,10 @@ class Database:
             VALUES ('{name}', '{detail_1}', '{detail_2}', '{detail_3}', '{detail_4}', '{detail_5}')""")
         pass
 
-    def update(self, og_name, name, detail_1, detail_2, detail_3, detail_4, detail_5):
+    def delete(self, name):
         query = QSqlQuery()
         query.exec(
-            f"""UPDATE {self.db_name}
-            SET NAME = '{name}', DETAIL_1 = '{detail_1}', DETAIL_2 = '{detail_2}', DETAIL_3 = '{detail_3}', DETAIL_4 = '{detail_4}', DETAIL_5 = '{detail_5}'
-            WHERE NAME = '{og_name}'""")
+            f"""DELETE FROM {self.db_name} WHERE NAME = '{name}'""")
 
     def __exit__(self, exc_type, exc_value, traceback):
         # Close the database connection when exiting the context

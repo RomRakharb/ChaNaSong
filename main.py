@@ -1,4 +1,3 @@
-
 from PySide6.QtGui import QFont
 from PySide6.QtWidgets import (
     QApplication,
@@ -137,13 +136,14 @@ class MainWindow(QMainWindow):
 
     def edit(self):
         if self.print_bt.isEnabled() and self.name_le.text() != "" and self.detail_1.text() != "":
+            print('enter edit mode')
             self.line_state(True)
             self.button_state(False, [1])
             self.name_cbb.setEnabled(False)
-        elif self.name_le.text() != "" and self.detail_1.text() != "":
+        elif self.name_cbb.currentText() != self.name_le.text() and self.name_le.text() != "" and self.detail_1.text() != "":
             with Database('ADDRESSEE') as db_context:
-                db_context.update(
-                    self.name_cbb.currentText(),
+                db_context.delete(self.name_cbb.currentText())
+                db_context.insert(
                     self.name_le.text(),
                     self.detail_1.text(),
                     self.detail_2.text(),
@@ -151,6 +151,7 @@ class MainWindow(QMainWindow):
                     self.detail_4.text(),
                     self.detail_5.text())
                 self.reset()
+                print('exit edit mode')
 
     def add(self):
         if self.print_bt.isEnabled():
@@ -159,17 +160,16 @@ class MainWindow(QMainWindow):
             self.button_state(False, [2])
             self.name_cbb.clear()
             self.name_cbb.setEnabled(False)
-        else:
-            if self.name_le.text() != "" and self.detail_1.text() != "":
-                with Database('ADDRESSEE') as db_context:
-                    db_context.insert(
-                        self.name_le.text(),
-                        self.detail_1.text(),
-                        self.detail_2.text(),
-                        self.detail_3.text(),
-                        self.detail_4.text(),
-                        self.detail_5.text())
-                    self.reset()
+        elif self.name_cbb.currentText() != self.name_le.text() and self.name_le.text() != "" and self.detail_1.text() != "":
+            with Database('ADDRESSEE') as db_context:
+                db_context.insert(
+                    self.name_le.text(),
+                    self.detail_1.text(),
+                    self.detail_2.text(),
+                    self.detail_3.text(),
+                    self.detail_4.text(),
+                    self.detail_5.text())
+                self.reset()
 
     def line_state(self, state: bool):
         le_list = [
