@@ -58,6 +58,7 @@ class MainWindow(QMainWindow):
         self.add_bt = QPushButton("เพิ่ม")
         self.add_bt.released.connect(self.add)
         self.delete_bt = QPushButton("ลบ")
+        self.delete_bt.released.connect(self.delete)
         self.a4_chb = QCheckBox("ขนาด A4")
         self.not_send_chb = QCheckBox("ไม่ส่ง")
 
@@ -174,7 +175,10 @@ class MainWindow(QMainWindow):
                 self.reset()
 
     def delete(self):
-        pass
+        if self.print_bt.isEnabled() and self.name_le.text() != "" and self.detail_1.text() != "":
+            with Database('ADDRESSEE') as db_context:
+                db_context.delete(self.name_le.text())
+                self.reset()
 
     def line_state(self, state: bool):
         le_list = [
