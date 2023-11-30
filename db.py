@@ -45,3 +45,5 @@ if __name__ == "__main__":
     with Database('addressee') as db_context:
         for row in db_context.select(1):
             print(row)
+        # if 'ตัวอย่า' in db_context.select(1):
+        #     print('yes')
