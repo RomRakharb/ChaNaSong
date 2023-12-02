@@ -1,4 +1,4 @@
-from PySide6.QtGui import QFont
+from PySide6.QtGui import QFont, QFontDatabase
 from PySide6.QtWidgets import (
     QApplication,
     QMainWindow,
@@ -64,6 +64,9 @@ class MainWindow(QMainWindow):
         self.a4_chb = QCheckBox("ขนาด A4")
         self.not_send_chb = QCheckBox("ไม่ส่ง")
 
+        for button in [self.print_bt, self.reset_bt, self.edit_bt, self.add_bt, self.delete_bt]:
+            button.setAutoDefault(True)
+
         right_layout.addWidget(self.print_bt)
         right_layout.addWidget(self.reset_bt)
         right_layout.addWidget(self.edit_bt)
@@ -100,34 +103,19 @@ class MainWindow(QMainWindow):
                     self.detail_4.setText(db_context.select_col(5)[row])
                     self.detail_5.setText(db_context.select_col(6)[row])
 
-    def set_font(self):
-        font = 'Arial'
-        font_size = 20
-        widget_list = [
-            self.name_cbb,
-            self.name_le,
-            self.detail_1,
-            self.detail_2,
-            self.detail_3,
-            self.detail_4,
-            self.detail_5,
-            self.org_name_lb,
-            self.start_lb,
-            self.print_bt,
-            self.reset_bt,
-            self.edit_bt,
-            self.add_bt,
-            self.delete_bt,
-            self.a4_chb,
-            self.not_send_chb
-        ]
-        for each_widget in widget_list:
-            each_widget.setFont(QFont(font, font_size))
+    @staticmethod
+    def set_font():
+        font_path = "./resource/THSarabunNew.ttf"
+        font_id = QFontDatabase.addApplicationFont(font_path)
+        font_family = QFontDatabase.applicationFontFamilies(font_id)[0]
+        font_size = 28
+        app_font = QFont(font_family, font_size)
+        QApplication.setFont(app_font)
 
     def print(self):
-        with Database('ADDRESSEE') as db_context:
-            envelope(db_context.select(self.name_le.text()))
-        pass
+        if self.name_le != "":
+            with Database('ADDRESSEE') as db_context:
+                envelope(db_context.select(self.name_le.text()))
 
     def reset(self):
         self.line_state(False)

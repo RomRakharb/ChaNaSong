@@ -7,7 +7,7 @@ import subprocess
 
 def envelope(item_list, person_name=""):
     canvas = Canvas(f"temp/{str(item_list[0])}.pdf", pagesize=(9.5 * inch, 4.125 * inch))
-    pdfmetrics.registerFont(TTFont('THSarabunNew', 'static/THSarabunNew.ttf'))
+    pdfmetrics.registerFont(TTFont('THSarabunNew', 'resource/THSarabunNew.ttf'))
     canvas.setFont("THSarabunNew", 16)
     canvas.drawString(3 * cm, 8 * cm, "พิสูจน์หลักฐานจังหวัดภูเก็ต")
     canvas.drawString(3 * cm, 7.4 * cm, "323/39 ถนนเยาวราช")

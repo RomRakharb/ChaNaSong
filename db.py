@@ -8,7 +8,7 @@ class Database:
     def __enter__(self):
         # Initialize the database connection
         self.db = QSqlDatabase.addDatabase('QSQLITE')
-        self.db.setDatabaseName('database.db')
+        self.db.setDatabaseName('./resource/database.db')
 
         # Open the database connection
         if not self.db.open():
