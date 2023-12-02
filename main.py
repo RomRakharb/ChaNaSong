@@ -12,6 +12,7 @@ from PySide6.QtWidgets import (
     QCheckBox,
 )
 
+from pdf import envelope, a4
 from db import Database
 from widget import SearchableComboBox
 
@@ -51,6 +52,7 @@ class MainWindow(QMainWindow):
         # start right layout
         right_layout = QVBoxLayout()
         self.print_bt = QPushButton("พิมพ์")
+        self.print_bt.released.connect(self.print)
         self.reset_bt = QPushButton("รีเซ็ต")
         self.reset_bt.released.connect(self.reset)
         self.edit_bt = QPushButton("แก้ไข")
@@ -88,15 +90,15 @@ class MainWindow(QMainWindow):
         else:
             data = text.data()
         with Database('ADDRESSEE') as db_context:
-            for row, value in enumerate(db_context.select(1)):
+            for row, value in enumerate(db_context.select_col(1)):
                 if value == data:
-                    self.name_cbb.setEditText(db_context.select(1)[row])
-                    self.name_le.setText(db_context.select(1)[row])
-                    self.detail_1.setText(db_context.select(2)[row])
-                    self.detail_2.setText(db_context.select(3)[row])
-                    self.detail_3.setText(db_context.select(4)[row])
-                    self.detail_4.setText(db_context.select(5)[row])
-                    self.detail_5.setText(db_context.select(6)[row])
+                    self.name_cbb.setEditText(db_context.select_col(1)[row])
+                    self.name_le.setText(db_context.select_col(1)[row])
+                    self.detail_1.setText(db_context.select_col(2)[row])
+                    self.detail_2.setText(db_context.select_col(3)[row])
+                    self.detail_3.setText(db_context.select_col(4)[row])
+                    self.detail_4.setText(db_context.select_col(5)[row])
+                    self.detail_5.setText(db_context.select_col(6)[row])
 
     def set_font(self):
         font = 'Arial'
@@ -122,6 +124,11 @@ class MainWindow(QMainWindow):
         for each_widget in widget_list:
             each_widget.setFont(QFont(font, font_size))
 
+    def print(self):
+        with Database('ADDRESSEE') as db_context:
+            envelope(db_context.select(self.name_le.text()))
+        pass
+
     def reset(self):
         self.line_state(False)
         self.line_clear()
@@ -130,7 +137,7 @@ class MainWindow(QMainWindow):
         self.name_cbb.setEnabled(True)
         self.name_cbb.clear()
         with Database('ADDRESSEE') as db_context:
-            for row in db_context.select(1):
+            for row in db_context.select_col(1):
                 self.name_cbb.addItem(row)
         self.name_cbb.clearEditText()
         self.name_cbb.setFocus()
@@ -142,7 +149,7 @@ class MainWindow(QMainWindow):
             self.name_cbb.setEnabled(False)
         elif self.name_le.text() != "" and self.detail_1.text() != "":
             with Database('ADDRESSEE') as db_context:
-                if self.name_le.text() in db_context.select(1) and self.name_le.text() != self.name_cbb.currentText():
+                if self.name_le.text() in db_context.select_col(1) and self.name_le.text() != self.name_cbb.currentText():
                     return None
                 db_context.delete(self.name_cbb.currentText())
                 db_context.insert(
@@ -163,7 +170,7 @@ class MainWindow(QMainWindow):
             self.name_cbb.setEnabled(False)
         elif self.name_le.text() != "" and self.detail_1.text() != "":
             with Database('ADDRESSEE') as db_context:
-                if self.name_le.text() in db_context.select(1):
+                if self.name_le.text() in db_context.select_col(1):
                     return None
                 db_context.insert(
                     self.name_le.text(),

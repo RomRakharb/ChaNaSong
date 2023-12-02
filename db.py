@@ -16,7 +16,16 @@ class Database:
             raise RuntimeError("Database connection failed")
         return self
 
-    def select(self, column: int) -> list[str]:
+    def select(self, name):
+        data_list = []
+        query = QSqlQuery()
+        query.exec(f"SELECT * FROM {self.db_name} WHERE NAME = '{name}'")
+        while query.next():
+            for i in range(0, 7):
+                data_list.append(query.value(i))
+        return data_list
+
+    def select_col(self, column: int) -> list[str]:
         data_list = []
         query = QSqlQuery()
         query.exec(f"SELECT * FROM {self.db_name} ORDER BY NAME DESC")
@@ -43,7 +52,8 @@ class Database:
 
 if __name__ == "__main__":
     with Database('addressee') as db_context:
-        for row in db_context.select(1):
-            print(row)
+        print(db_context.select('ซันมินิมาร์ท'))
+        # for row in db_context.select(1):
+        #     print(row)
         # if 'ตัวอย่า' in db_context.select(1):
         #     print('yes')

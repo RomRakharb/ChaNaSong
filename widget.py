@@ -13,7 +13,7 @@ class SearchableComboBox(QComboBox):
         super().__init__()
         self.table = table
         with Database(table) as db_context:
-            items = db_context.select(1)
+            items = db_context.select_col(1)
         self.setEditable(True)
         self.setMaxVisibleItems(5)
 
@@ -33,7 +33,7 @@ class SearchableComboBox(QComboBox):
     def reset(self):
         self.clearEditText()
         with Database(self.table) as db_context:
-            items = db_context.select(1)
+            items = db_context.select_col(1)
         self.clear()
         self.addItems(items)
         self.clearEditText()
