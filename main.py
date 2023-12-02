@@ -17,11 +17,15 @@ from db import Database
 from widget import SearchableComboBox
 
 import sys
+import os
 
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+
+        self.init()
+
         self.setWindowTitle("จ่าหน้าซอง")
 
         # start outer layout
@@ -86,6 +90,21 @@ class MainWindow(QMainWindow):
         widget = QWidget()
         widget.setLayout(layout)
         self.setCentralWidget(widget)
+
+    @staticmethod
+    def init():
+        folder_path = "./temp"
+        for file_name in os.listdir(folder_path):
+            file_path = os.path.join(folder_path, file_name)
+
+            # Check if it's a file (not a directory)
+            if os.path.isfile(file_path):
+                try:
+                    # Delete the file
+                    os.remove(file_path)
+                    print(f"Deleted: {file_path}")
+                except Exception as e:
+                    print(f"Error deleting {file_path}: {e}")
 
     def name_selected(self, text):
         if isinstance(text, int):
