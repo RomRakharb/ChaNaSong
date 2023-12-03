@@ -38,7 +38,6 @@ class Database:
         query.exec(
             f"""INSERT INTO {self.db_name} (NAME, DETAIL_1, DETAIL_2, DETAIL_3, DETAIL_4, DETAIL_5) 
             VALUES ('{name}', '{detail_1}', '{detail_2}', '{detail_3}', '{detail_4}', '{detail_5}')""")
-        pass
 
     def delete(self, name):
         query = QSqlQuery()

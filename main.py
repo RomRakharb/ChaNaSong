@@ -102,7 +102,6 @@ class MainWindow(QMainWindow):
                 try:
                     # Delete the file
                     os.remove(file_path)
-                    print(f"Deleted: {file_path}")
                 except Exception as e:
                     print(f"Error deleting {file_path}: {e}")
 
@@ -132,7 +131,7 @@ class MainWindow(QMainWindow):
         QApplication.setFont(app_font)
 
     def print(self):
-        if self.name_le != "":
+        if self.name_le.text() != "" and self.detail_1.text() != "":
             with Database('ADDRESSEE') as db_context:
                 envelope(db_context.select(self.name_le.text()))
 
@@ -147,6 +146,7 @@ class MainWindow(QMainWindow):
             for row in db_context.select_col(1):
                 self.name_cbb.addItem(row)
         self.name_cbb.clearEditText()
+        self.name_cbb.reset()
         self.name_cbb.setFocus()
 
     def edit(self):
@@ -189,10 +189,11 @@ class MainWindow(QMainWindow):
                 self.reset()
 
     def delete(self):
-        if self.print_bt.isEnabled() and self.name_le.text() != "" and self.detail_1.text() != "":
-            with Database('ADDRESSEE') as db_context:
-                db_context.delete(self.name_le.text())
-                self.reset()
+        pass
+        # if self.print_bt.isEnabled() and self.name_le.text() != "" and self.detail_1.text() != "":
+        #     with Database('ADDRESSEE') as db_context:
+        #         db_context.delete(self.name_le.text())
+        #         self.reset()
 
     def line_state(self, state: bool):
         le_list = [
