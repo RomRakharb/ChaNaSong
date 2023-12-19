@@ -14,7 +14,7 @@ from PySide6.QtWidgets import (
 
 from pdf import envelope, a4
 from db import Database
-from widget import SearchableComboBox
+from widget import SearchableComboBox, confirm_delete, not_send_name
 
 import sys
 import os
@@ -133,7 +133,16 @@ class MainWindow(QMainWindow):
     def print(self):
         if self.name_le.text() != "" and self.detail_1.text() != "":
             with Database('ADDRESSEE') as db_context:
-                envelope(db_context.select(self.name_le.text()))
+                if not self.a4_chb.isChecked():
+                    if not self.not_send_chb.isChecked():
+                        envelope(db_context.select(self.name_le.text()))
+                    else:
+                        envelope(db_context.select(self.name_le.text()), not_send_name())
+                else:
+                    if not self.not_send_chb.isChecked():
+                        a4(db_context.select(self.name_le.text()))
+                    else:
+                        a4(db_context.select(self.name_le.text()), not_send_name())
 
     def reset(self):
         self.line_state(False)
@@ -189,11 +198,10 @@ class MainWindow(QMainWindow):
                 self.reset()
 
     def delete(self):
-        pass
-        # if self.print_bt.isEnabled() and self.name_le.text() != "" and self.detail_1.text() != "":
-        #     with Database('ADDRESSEE') as db_context:
-        #         db_context.delete(self.name_le.text())
-        #         self.reset()
+        if self.print_bt.isEnabled() and self.name_le.text() != "" and self.detail_1.text() != "" and confirm_delete():
+            with Database('ADDRESSEE') as db_context:
+                db_context.delete(self.name_le.text())
+                self.reset()
 
     def line_state(self, state: bool):
         le_list = [

@@ -1,11 +1,7 @@
-from PySide6.QtWidgets import QApplication, QComboBox, QCompleter
+from PySide6.QtWidgets import QApplication, QComboBox, QCompleter, QMessageBox, QLineEdit, QVBoxLayout, QInputDialog
 from PySide6.QtCore import Qt, QStringListModel
-from PySide6.QtGui import QFont
 
 from db import Database
-
-font = 'Arial'
-font_size = 20
 
 
 class SearchableComboBox(QComboBox):
@@ -26,9 +22,7 @@ class SearchableComboBox(QComboBox):
         self.addItems(items)
 
         self.clearEditText()
-        self.setFont(QFont(font, font_size))
-        popup = self.completer.popup()
-        popup.setFont(QFont(font, font_size))
+        # popup = self.completer.popup()
 
     def reset(self):
         self.clearEditText()
@@ -43,7 +37,30 @@ class SearchableComboBox(QComboBox):
         self.completer.setModel(model)
 
 
-# class AddresseeDetail:
+def confirm_delete():
+    msg_box = QMessageBox()
+
+    msg_box.setIcon(QMessageBox.Warning)
+    msg_box.setText("ต้องการลบรายการนี้ ใช่หรือไม่")
+    msg_box.setWindowTitle("ลบรายการ")
+
+    ok_button = msg_box.addButton("ยืนยัน", QMessageBox.AcceptRole)
+    cancel_button = msg_box.addButton("ยกเลิก", QMessageBox.RejectRole)
+
+    result = msg_box.exec()
+
+    if msg_box.clickedButton() == ok_button:
+        return True
+    elif msg_box.clickedButton() == cancel_button:
+        return False
+
+
+def not_send_name():
+    user_input, ok_pressed = QInputDialog.getText(None, "Input Dialog", "Please enter your name:")
+    if ok_pressed:
+        return f"({user_input})"
+    else:
+        return "()"
 
 
 def on_item_selected(item):
@@ -52,9 +69,10 @@ def on_item_selected(item):
 
 if __name__ == "__main__":
     app = QApplication([])
-    fruits = ["Apple", "Banana", "Cherry", "Date", "Elderberry", "Fig", "Grape"]
-    combo = SearchableComboBox('ADDRESSEE')
-    combo.reset()
-    combo.show()
+    not_send_name()
+    # fruits = ["Apple", "Banana", "Cherry", "Date", "Elderberry", "Fig", "Grape"]
+    # combo = SearchableComboBox('ADDRESSEE')
+    # combo.reset()
+    # combo.show()
     # combo.activated.connect(lambda: on_item_selected(combo.currentText()))
     app.exec()
