@@ -1,3 +1,6 @@
+import os
+import sys
+
 from PySide6.QtGui import QFont, QFontDatabase
 from PySide6.QtWidgets import (
     QApplication,
@@ -12,12 +15,9 @@ from PySide6.QtWidgets import (
     QCheckBox,
 )
 
-from pdf import envelope, a4
 from db import Database
+from pdf import envelope, a4
 from widget import SearchableComboBox, confirm_delete, not_send_name
-
-import sys
-import os
 
 
 class MainWindow(QMainWindow):
@@ -165,7 +165,8 @@ class MainWindow(QMainWindow):
             self.name_cbb.setEnabled(False)
         elif self.name_le.text() != "" and self.detail_1.text() != "":
             with Database('ADDRESSEE') as db_context:
-                if self.name_le.text() in db_context.select_col(1) and self.name_le.text() != self.name_cbb.currentText():
+                if self.name_le.text() in db_context.select_col(
+                        1) and self.name_le.text() != self.name_cbb.currentText():
                     return None
                 db_context.delete(self.name_cbb.currentText())
                 db_context.insert(

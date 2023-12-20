@@ -56,19 +56,19 @@ def a4(item_list, person_name=""):
     canvas.drawString(2 * cm, 14 * cm, "323/39 ถนนเยาวราช")
     canvas.drawString(2 * cm, 13 * cm, "ตำบลตลาดใหญ่ อำเภอเมืองภูเก็ต")
     canvas.drawString(2 * cm, 12 * cm, "จังหวัดภูเก็ต 83000")
-    canvas.drawString(10 * cm, 10 * cm, 'เรียน')
+    canvas.drawString(8 * cm, 10 * cm, 'เรียน')
     if person_name == "":
-        canvas.drawString(11.5 * cm, 10 * cm, item_list[2])
-        canvas.drawString(11.5 * cm, 9 * cm, item_list[3])
-        canvas.drawString(11.5 * cm, 8 * cm, item_list[4])
-        canvas.drawString(11.5 * cm, 7 * cm, item_list[5])
-        canvas.drawString(11.5 * cm, 6 * cm, item_list[6])
+        canvas.drawString(9.5 * cm, 10 * cm, item_list[2])
+        canvas.drawString(9.5 * cm, 9 * cm, item_list[3])
+        canvas.drawString(9.5 * cm, 8 * cm, item_list[4])
+        canvas.drawString(9.5 * cm, 7 * cm, item_list[5])
+        canvas.drawString(9.5 * cm, 6 * cm, item_list[6])
         canvas.rect(19.2 * cm, 15 * cm, 8.5 * cm, 4 * cm)
         canvas.drawString(20.2 * cm, 18 * cm, 'ชำระค่าฝากส่งเป็นรายเดือน')
         canvas.drawString(20.6 * cm, 17 * cm, 'ใบอนุญาตที่ 61/2537')
         canvas.drawString(22.2 * cm, 16 * cm, 'ปท.ภูเก็ต')
     else:
-        canvas.drawString(11.5 * cm, 10 * cm, item_list[1])
+        canvas.drawString(9.5 * cm, 10 * cm, item_list[1])
         if person_name != "()":
             each_person = person_name.split(', ')
             for count, name in enumerate(each_person):
